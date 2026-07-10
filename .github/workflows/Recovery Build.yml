@@ -162,7 +162,7 @@ jobs:
       run: |
         echo "--- Parcheando el Device Tree al vuelo ---"
         # Esto buscará y eliminará la línea obsoleta que hace fallar el lunch
-        sed -i '/PRODUCT_STATIC_BOOT_CONTROL_HAL/d' ${{ github.event.inputs.DEVICE_PATH }}/device.mk
+        sed -i 's/PRODUCT_STATIC_BOOT_CONTROL_HAL/DUMMY_IGNORED_VAR/g' device/motorola/lisbon/device.mk
         
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
