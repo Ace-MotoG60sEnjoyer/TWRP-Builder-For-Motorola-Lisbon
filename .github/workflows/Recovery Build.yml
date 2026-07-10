@@ -171,8 +171,8 @@ jobs:
         with open(filepath, 'w') as f:
             f.write(data)
         "
-        echo "--- Así quedó el device.mk ---"
-        cat ${{ github.event.inputs.DEVICE_PATH }}/device.mk
+        echo "--- Redirigiendo vendor/omni a vendor/twrp ---"
+        sed -i 's/vendor\/omni/vendor\/twrp/g' ${{ github.event.inputs.DEVICE_PATH }}/${{ github.event.inputs.MAKEFILE_NAME }}.mk
         
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
