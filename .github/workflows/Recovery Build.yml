@@ -160,9 +160,13 @@ jobs:
 
     - name: Building recovery
       run: |
+        echo "--- Parcheando el Device Tree al vuelo ---"
+        # Esto buscará y eliminará la línea obsoleta que hace fallar el lunch
+        sed -i '/PRODUCT_STATIC_BOOT_CONTROL_HAL/d' ${{ github.event.inputs.DEVICE_PATH }}/device.mk
+        
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
-        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng || { echo "ERROR: Lunch falló. Revisa el paso anterior 'Check Device Tree & Makefile' para ver si el archivo dice omni_lisbon.mk en lugar de twrp_lisbon.mk"; exit 1; }
+        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng || { echo "ERROR: Lunch falló. Revisa el paso anterior."; exit 1; }
         make clean
         make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
