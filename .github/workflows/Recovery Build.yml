@@ -160,13 +160,23 @@ jobs:
 
     - name: Building recovery
       run: |
-        echo "--- Parcheando el Device Tree al vuelo ---"
-        # Esto buscará y eliminará la línea obsoleta que hace fallar el lunch
-        sed -i 's/PRODUCT_STATIC_BOOT_CONTROL_HAL/DUMMY_IGNORED_VAR/g' device/motorola/lisbon/device.mk
+        echo "--- Cirugía avanzada al Device Tree con Python ---"
+        python3 -c "
+        import re
+        filepath = '${{ github.event.inputs.DEVICE_PATH }}/device.mk'
+        with open(filepath, 'r') as f:
+            data = f.read()
+        # Elimina el bloque obsoleto y todas sus líneas colgantes de forma inteligente
+        data = re.sub(r'PRODUCT_STATIC_BOOT_CONTROL_HAL.*?(\n(?=[A-Z])|\Z)', '\n', data, flags=re.DOTALL)
+        with open(filepath, 'w') as f:
+            f.write(data)
+        "
+        echo "--- Así quedó el device.mk ---"
+        cat ${{ github.event.inputs.DEVICE_PATH }}/device.mk
         
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
-        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng || { echo "ERROR: Lunch falló. Revisa el paso anterior."; exit 1; }
+        lunch ${{ github.event.inputs.MAKEFILE_NAME }}-eng || { echo 'ERROR: Lunch falló.'; exit 1; }
         make clean
         make ${{ github.event.inputs.BUILD_TARGET }}image -j$(nproc --all)
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
