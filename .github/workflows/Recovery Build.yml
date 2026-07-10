@@ -36,7 +36,7 @@ on:
       MAKEFILE_NAME:
         description: 'MAKEFILE_NAME'
         required: true
-        default: 'twrp_lisbon'
+        default: 'omni_lisbon'
       BUILD_TARGET:
         description: 'BUILD_TARGET'
         required: true
